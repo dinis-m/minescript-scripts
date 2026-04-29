@@ -17,7 +17,7 @@ teleport_to = "/home farmers"
 TARGET = 43*12
 complete = False
 
-m.echo(f"Require {TARGET} total \n{result_name} \n({(TARGET + 63 ) // 64} stacks(rounded) required)")
+m.echo(f"Require {TARGET} total \n{cost_name} \n({(TARGET + 63 ) // 64} stacks(rounded) required)")
 #first called container MUST be opened first
 while not complete:
     while not Screen.wait_screen():
