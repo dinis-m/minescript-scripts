@@ -9,7 +9,7 @@ from time import sleep
 
 #parameters to change per basis (name MUST be ItemStack.item)
 result_name = ["minecraft:golden_carrot"]
-cost_name = ["minecraft:pumpkin", "minecraft:melon", "minecraft:emerald"]
+cost_name = ["minecraft:emerald"]
 villager_type = "Farmer"
 teleport_to = "/home farmers"
 
@@ -17,14 +17,13 @@ teleport_to = "/home farmers"
 TARGET = 43*12
 complete = False
 
-m.echo(f"Require {TARGET} total \n{cost_name} \n({(TARGET + 63 ) // 64} stacks(rounded) required)")
+m.echo(f"Require {TARGET} total \n{result_name} \n({(TARGET + 63 ) // 64} stacks(rounded) required)")
 #first called container MUST be opened first
 while not complete:
     while not Screen.wait_screen():
         sleep(0.05)
-    #modify statement if trading for a result/cost
-    #complete = fill_to_target(cost_name[2], TARGET)
-    complete = fill_to_target(cost_name[0], TARGET) and fill_to_target(cost_name[1], TARGET)
+    #break loop if player has sufficient items in inventory for trades
+    complete = fill_to_target(cost_name[0], TARGET)
 
 
 last_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
@@ -47,10 +46,7 @@ while True:
                     m.player_press_forward(False)
                     m.player_press_use(True)
                     sleep(0.15)
-                    #modify for the trades being made
-                    process_trade(cost_name[0])
-                    process_trade(cost_name[1])
-                    #process_trade(result_name[0])
+                    process_trade(result_name[0])
                     Screen.close_screen()
                     sleep(0.05)
                     trading = True
