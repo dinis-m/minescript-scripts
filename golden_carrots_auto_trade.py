@@ -5,9 +5,6 @@ from trade_process import process_trade
 from inventory_handle import fill_to_target
 from time import sleep
 
-#TODO: figure out how to send data from this script to a web page
-
-#parameters to change per basis (name MUST be ItemStack.item)
 result_name = ["minecraft:golden_carrot"]
 cost_name = ["minecraft:emerald"]
 villager_type = "Farmer"
@@ -27,7 +24,7 @@ while not complete:
 
 
 last_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
-trading = False
+trading = True
 
 m.echo("DONT MOVE")
 m.player_press_forward(False)
@@ -38,6 +35,9 @@ sleep(3) # wait to finish teleporting
 m.player_press_forward(True)
 
 while True:
+    if m.screen_name() == "Crafting":
+        m.execute("\\killjob -1")
+    
     if m.player_get_targeted_entity(max_distance=2) is not None:
         if m.player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore
             if m.player_get_targeted_entity(max_distance=2) is not None:
@@ -49,11 +49,11 @@ while True:
                     process_trade(result_name[0])
                     Screen.close_screen()
                     sleep(0.05)
-                    trading = True
+                    trading = False
                 else:
                     rotate_relative(90,0)
 
-    if trading:
+    if not trading:
         m.player_press_forward(True)
         sleep(0.4)
-        trading = False
+        trading = True
