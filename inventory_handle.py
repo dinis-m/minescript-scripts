@@ -12,6 +12,7 @@ def inventory_count(item_name):
 
 
 def fill_to_target(item_name, target):
+    """Return True if the player has target amount of item_name"""
     if not m.screen_name():
         return False
     
