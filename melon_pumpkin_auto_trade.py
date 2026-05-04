@@ -33,6 +33,8 @@ sleep(3) # wait to finish teleporting
 m.player_press_forward(True)
 
 while True:
+    m.flush()
+    
     if m.screen_name() == "Crafting":
         m.execute("\\killjob -1")
 
