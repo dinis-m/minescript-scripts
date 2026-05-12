@@ -4,7 +4,7 @@ from time import sleep
 
 #Currently only works if first called container in script is opened first
 
-def inventory_count(item_name: str):
+def inventory_count(item_name: str) -> int:
     return sum(
         stack.count for stack in m.player_inventory()
         if stack.item == item_name

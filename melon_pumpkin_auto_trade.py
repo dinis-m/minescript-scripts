@@ -46,6 +46,7 @@ while True:
                     m.player_press_forward(False)
                     m.player_press_use(True)
                     sleep(0.15)
+                    # TODO: have function return 
                     process_trade(cost_name[0])
                     process_trade(cost_name[1])
                     Screen.close_screen()
