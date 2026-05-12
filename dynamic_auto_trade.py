@@ -14,17 +14,17 @@ villager_type = "Farmer"
 teleport_to = "/home farmers"
 
 
-TARGET = 43*12
+target = 43*12
 complete = False
 
-m.echo(f"Require {TARGET} total \n{cost_name} \n({(TARGET + 63 ) // 64} stacks(rounded) required)")
+m.echo(f"Require {target} total \n{cost_name} \n({(target + 63 ) // 64} stacks(rounded) required)")
 #first called container MUST be opened first
 while not complete:
     while not Screen.wait_screen():
         sleep(0.05)
     #modify statement if trading for a result/cost
-    #complete = fill_to_target(cost_name[2], TARGET)
-    complete = fill_to_target(cost_name[0], TARGET) and fill_to_target(cost_name[1], TARGET)
+    #complete = fill_to_target(cost_name[2], target)
+    complete = fill_to_target(cost_name[0], target) and fill_to_target(cost_name[1], target)
 
 
 last_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
