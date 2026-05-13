@@ -1,4 +1,4 @@
-import system.lib.minescript as m
+import minescript as m
 from minescript_plus import Screen
 from rotation import rotate_relative
 from trade_process import process_trade

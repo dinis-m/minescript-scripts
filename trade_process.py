@@ -2,6 +2,7 @@ from minescript_plus import Trading, Screen
 
 def process_trade(item_name: str) -> None:
     try:
+        # Number of trades is fixed
         for index in range(0, 10):
             if str(Trading.get_result(index)).split()[-1] == item_name:
                 Trading.trade_offer(index)

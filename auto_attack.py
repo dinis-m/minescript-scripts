@@ -1,4 +1,4 @@
-import system.lib.minescript as m
+import minescript as m
 from time import sleep 
 
 sleep(0.5)

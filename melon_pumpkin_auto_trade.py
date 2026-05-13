@@ -1,4 +1,4 @@
-import system.lib.minescript as m
+import minescript as m
 from minescript_plus import Screen
 from rotation import rotate_relative
 from trade_process import process_trade
@@ -35,8 +35,9 @@ m.player_press_forward(True)
 while True:
     m.flush()
     
+    # TODO: craft all emeralds into blocks
     if m.screen_name() == "Crafting":
-        m.execute("\\killjob -1")
+        #craft_item("minecraft:emerald_block")
 
     if m.player_get_targeted_entity(max_distance=2) is not None:
         if m.player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore
@@ -46,7 +47,6 @@ while True:
                     m.player_press_forward(False)
                     m.player_press_use(True)
                     sleep(0.15)
-                    # TODO: have function return 
                     process_trade(cost_name[0])
                     process_trade(cost_name[1])
                     Screen.close_screen()

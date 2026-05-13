@@ -1,4 +1,4 @@
-import system.lib.minescript as m
+import minescript as m
 from minescript_plus import Inventory, Screen
 from time import sleep
 
