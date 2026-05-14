@@ -4,6 +4,10 @@ from rotation import rotate_relative
 from trade_process import process_trade
 from inventory_handle import fill_to_target
 from time import sleep
+from java import JavaClass
+
+Minecraft = JavaClass("net.minecraft.client.Minecraft")
+mc = Minecraft.getInstance()
 
 cost_name = ["minecraft:pumpkin", "minecraft:melon"]
 villager_type = "Farmer"
@@ -36,8 +40,12 @@ while True:
     m.flush()
     
     # TODO: craft all emeralds into blocks
+    if str(mc.screen).split("@")[0] == "net.minecraft.class_479":
+        #craft emerald blocks
+        pass
+
     if m.screen_name() == "Crafting":
-        #craft_item("minecraft:emerald_block")
+        m.execute("\\killjob -1")    
 
     if m.player_get_targeted_entity(max_distance=2) is not None:
         if m.player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore

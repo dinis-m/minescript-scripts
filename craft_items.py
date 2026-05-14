@@ -4,8 +4,9 @@ from time import sleep
 from java import JavaClass
 
 Minecraft = JavaClass("net.minecraft.client.Minecraft")
+CraftingInput = JavaClass("net.minecraft.world.item.crafting.CraftingInput")
+CraftingMenu = JavaClass("net.minecraft.world.inventory.CraftingMenu")
 RecipeManager = JavaClass("net.minecraft.world.item.crafting.RecipeManager")
-RecipeMap = JavaClass("net.minecraft.world.item.crafting.RecipeMap")
 mc = Minecraft.getInstance()
 
 def craft_item(item_name: str):
@@ -18,4 +19,8 @@ def craft_item(item_name: str):
     m.echo(f"Attempting to craft {item_name}...")
 
 
-print(RecipeMap.values())
+sleep(1)
+print(str(mc.screen).split("@"))
+
+if str(mc.screen).split("@")[0] == "net.minecraft.class_479":
+    pass
