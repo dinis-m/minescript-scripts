@@ -47,16 +47,14 @@ while True:
         #craft emerald blocks
         pass
 
-    # exit script
-    if first_trade == [int(float(str(x))) for x in pre_trade] and len(first_trade) != 0:
-        m.execute("\\killjob -1")
-
     if m.player_get_targeted_entity(max_distance=2) is not None:
         if m.player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore
             if m.player_get_targeted_entity(max_distance=2) is not None:
                 if m.player_get_targeted_entity().position != pre_trade: # type: ignore
                     pre_trade = m.player_get_targeted_entity().position # type: ignore
                     m.player_press_forward(False)
+                    if first_trade == [int(float(str(x))) for x in pre_trade]:
+                        break
                     m.player_press_use(True)
                     sleep(0.15)
                     process_trade(cost_name[0])
@@ -67,8 +65,6 @@ while True:
                 else:
                     rotate_relative(90,0)
 
-    
-
     if not trading:
         if len(first_trade) == 0:
             first_trade = [int(float(str(x))) for x in pre_trade]
@@ -76,3 +72,5 @@ while True:
         m.player_press_forward(True)
         sleep(0.4)
         trading = True
+
+m.execute("\\killjob -1")
