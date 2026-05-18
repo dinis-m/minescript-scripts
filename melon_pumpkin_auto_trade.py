@@ -7,7 +7,7 @@ from time import sleep
 from java import JavaClass
 
 Minecraft = JavaClass("net.minecraft.client.Minecraft")
-mc = Minecraft.getInstance()
+mc = Minecraft.getInstance() # type: ignore
 
 cost_name = ["minecraft:pumpkin", "minecraft:melon"]
 villager_type = "Farmer"
@@ -27,7 +27,6 @@ while not complete:
 #forces camera to turn if facing the same villager.
 pre_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
 first_trade: list[int] = []
-print(f"first trade: {first_trade}")
 trading = True
 
 m.echo("DONT MOVE")
@@ -43,7 +42,7 @@ while True:
     
     # TODO: craft all emeralds into blocks
     # crafting table class: net.minecraft.class_479
-    if str(mc.screen).split("@")[0] == "net.minecraft.class_479":
+    if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
         #craft emerald blocks
         pass
 

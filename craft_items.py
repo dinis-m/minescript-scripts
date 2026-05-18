@@ -7,7 +7,7 @@ Minecraft = JavaClass("net.minecraft.client.Minecraft")
 CraftingInput = JavaClass("net.minecraft.world.item.crafting.CraftingInput")
 CraftingMenu = JavaClass("net.minecraft.world.inventory.CraftingMenu")
 RecipeManager = JavaClass("net.minecraft.world.item.crafting.RecipeManager")
-mc = Minecraft.getInstance()
+mc = Minecraft.getInstance() # type: ignore
 
 def craft_item(item_name: str):
     """
@@ -20,7 +20,6 @@ def craft_item(item_name: str):
 
 
 sleep(1)
-print(str(mc.screen).split("@"))
 
-if str(mc.screen).split("@")[0] == "net.minecraft.class_479":
+if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
     pass

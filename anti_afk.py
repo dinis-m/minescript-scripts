@@ -8,5 +8,6 @@ while True:
 
     if m.screen_name() != None:
         print("killing job...")
-        m.execute("\\killjob -1")
-        break   
+        break
+
+m.execute("\\killjob -1")

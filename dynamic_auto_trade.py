@@ -27,7 +27,8 @@ while not complete:
     complete = fill_to_target(cost_name[0], target) and fill_to_target(cost_name[1], target)
 
 
-last_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
+pre_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
+first_trade: list[int] = []
 trading = True
 
 m.echo("DONT MOVE")
@@ -42,14 +43,16 @@ while True:
     m.flush()
 
     if m.screen_name() == "Crafting":
-        m.execute("\\killjob -1")
+        break
     
     if m.player_get_targeted_entity(max_distance=2) is not None:
         if m.player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore
             if m.player_get_targeted_entity(max_distance=2) is not None:
-                if m.player_get_targeted_entity().position != last_trade: # type: ignore
-                    last_trade = m.player_get_targeted_entity().position # type: ignore
+                if m.player_get_targeted_entity().position != pre_trade: # type: ignore
+                    pre_trade = m.player_get_targeted_entity().position # type: ignore
                     m.player_press_forward(False)
+                    if first_trade == [int(float(str(x))) for x in pre_trade]:
+                        break
                     m.player_press_use(True)
                     sleep(0.15)
                     #modify for the trades being made
@@ -63,6 +66,11 @@ while True:
                     rotate_relative(90,0)
 
     if not trading:
+        if len(first_trade) == 0:
+            first_trade = [int(float(str(x))) for x in pre_trade]
+            print("first trade logged")
         m.player_press_forward(True)
         sleep(0.4)
         trading = True
+
+m.execute("\\killjob -1")
