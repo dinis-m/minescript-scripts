@@ -1,4 +1,4 @@
-from system.lib.minescript import player_orientation, player_set_orientation, player_position
+from minescript import player_orientation, player_set_orientation, player_position
 from time import perf_counter
 from math import sqrt, degrees, atan2, cos, pi
 

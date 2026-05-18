@@ -1,27 +1,32 @@
-import system.lib.minescript as m
+import minescript as m
 from minescript_plus import Screen
 from rotation import rotate_relative
 from trade_process import process_trade
 from inventory_handle import fill_to_target
 from time import sleep
+from java import JavaClass
+
+Minecraft = JavaClass("net.minecraft.client.Minecraft")
+mc = Minecraft.getInstance() # type: ignore
 
 cost_name = ["minecraft:pumpkin", "minecraft:melon"]
 villager_type = "Farmer"
 teleport_to = "/home farmers"
 
 
-TARGET = 43*12
+target = 43*12
 complete = False
 
-m.echo(f"Require {TARGET} total \n{cost_name} \n({(TARGET + 63 ) // 64} stacks(rounded) required)")
+m.echo(f"Require {target} total \n{cost_name} \n({(target + 63 ) // 64} stacks(rounded) required)")
 #first called container MUST be opened first
 while not complete:
     while not Screen.wait_screen():
         sleep(0.05)
-    complete = fill_to_target(cost_name[0], TARGET) and fill_to_target(cost_name[1], TARGET)
+    complete = fill_to_target(cost_name[0], target) and fill_to_target(cost_name[1], target)
 
-
-last_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
+#forces camera to turn if facing the same villager.
+pre_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
+first_trade: list[int] = []
 trading = True
 
 m.echo("DONT MOVE")
@@ -35,15 +40,20 @@ m.player_press_forward(True)
 while True:
     m.flush()
     
-    if m.screen_name() == "Crafting":
-        m.execute("\\killjob -1")
+    # TODO: craft all emeralds into blocks
+    # crafting table class: net.minecraft.class_479
+    if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
+        #craft emerald blocks
+        pass
 
     if m.player_get_targeted_entity(max_distance=2) is not None:
         if m.player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore
             if m.player_get_targeted_entity(max_distance=2) is not None:
-                if m.player_get_targeted_entity().position != last_trade: # type: ignore
-                    last_trade = m.player_get_targeted_entity().position # type: ignore
+                if m.player_get_targeted_entity().position != pre_trade: # type: ignore
+                    pre_trade = m.player_get_targeted_entity().position # type: ignore
                     m.player_press_forward(False)
+                    if first_trade == [int(float(str(x))) for x in pre_trade]:
+                        break
                     m.player_press_use(True)
                     sleep(0.15)
                     process_trade(cost_name[0])
@@ -55,6 +65,11 @@ while True:
                     rotate_relative(90,0)
 
     if not trading:
+        if len(first_trade) == 0:
+            first_trade = [int(float(str(x))) for x in pre_trade]
+            print("first trade logged")
         m.player_press_forward(True)
         sleep(0.4)
         trading = True
+
+m.execute("\\killjob -1")

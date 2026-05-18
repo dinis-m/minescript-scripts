@@ -622,7 +622,7 @@ with render_loop:
         @staticmethod
         def close_screen() -> None:
             """
-            Closes the currently open GUI in Minecraft
+            Closes the currently open chest GUI in Minecraft
             
             Returns:
                 None
