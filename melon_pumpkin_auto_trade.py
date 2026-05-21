@@ -62,8 +62,8 @@ while True:
                     sleep(0.15)
                     process_trade(cost_name[0])
                     process_trade(cost_name[1])
-                    Screen.close_screen()
                     sleep(0.05)
+                    Screen.close_screen()
                     trading = False
                 else:
                     rotate_relative(90,0)
