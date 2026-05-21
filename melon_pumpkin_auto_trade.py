@@ -29,6 +29,7 @@ pre_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4
 first_trade: list[int] = []
 trading = True
 
+Screen.close_screen()
 m.echo("DONT MOVE")
 m.player_press_forward(False)
 sleep(0.5)
@@ -45,6 +46,9 @@ while True:
     if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
         #craft emerald blocks
         pass
+
+    if m.screen_name() == "Crafting":
+        break
 
     if m.player_get_targeted_entity(max_distance=2) is not None:
         if m.player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore
