@@ -2,6 +2,8 @@ import minescript as m
 from minescript_plus import Inventory, Screen
 from time import sleep
 
+VERSION = "1.0.0"
+
 #Currently only works if first called container in script is opened first
 
 def inventory_count(item_name: str) -> int:

@@ -6,15 +6,19 @@ from inventory_handle import fill_to_target
 from time import sleep
 from java import JavaClass
 
+VERSION = "1.0.0"
+MAX_TRADES = 12
+
 Minecraft = JavaClass("net.minecraft.client.Minecraft")
 mc = Minecraft.getInstance() # type: ignore
 
 cost_name = ["minecraft:pumpkin", "minecraft:melon"]
 villager_type = "Farmer"
+villager_count = 43
 teleport_to = "/home farmers"
 
 
-target = 43*12
+target = villager_count*MAX_TRADES
 complete = False
 
 m.echo(f"Require {target} total \n{cost_name} \n({(target + 63 ) // 64} stacks(rounded) required)")
