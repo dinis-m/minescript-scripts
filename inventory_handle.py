@@ -41,7 +41,7 @@ def fill_to_target(item_name: str, target: int) -> bool:
             Inventory.shift_click_slot(item_slots[slot])
             sleep(0.1)
         except IndexError:
-            m.echo("Item not found.")
+            m.echo(f"{item_name} not found.")
             break
 
     Screen.close_screen()
