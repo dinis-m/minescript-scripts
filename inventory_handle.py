@@ -2,6 +2,8 @@ import minescript as m
 from minescript_plus import Inventory, Screen
 from time import sleep
 
+VERSION = "1.0.0"
+
 #Currently only works if first called container in script is opened first
 
 def inventory_count(item_name: str) -> int:
@@ -12,26 +14,37 @@ def inventory_count(item_name: str) -> int:
 
 
 def fill_to_target(item_name: str, target: int) -> bool:
-    """Return True if the player has target amount of item_name"""
+    """
+    Return True if the player has target amount of item_name.
+    
+    Pre-condition: item_name must be valid ItemStack.item.
+    """
     if not m.screen_name():
         return False
-    
-    m.echo("Require container holding " + item_name)
 
     count = inventory_count(item_name)
 
     if count >= target:
         return True
+    else:
+        m.echo("Require container holding " + item_name)
 
     missing = target - count
     stacks_needed = (missing + 63) // 64
 
-    for _ in range(stacks_needed):
-        num = Inventory.find_item(item_name, container=True)
-        if num is None or num >= 27:
+    # only store slots of items within the container 0-26
+    item_slots = [
+        item.slot for item in m.container_get_items()
+        if item.item == item_name and item.slot < 27
+    ]
+
+    for slot in range(0, stacks_needed):
+        try:
+            Inventory.shift_click_slot(item_slots[slot])
+            sleep(0.1)
+        except IndexError:
+            m.echo(f"{item_name} not found.")
             break
-        Inventory.shift_click_slot(slot=num)
-        sleep(0.1)
 
     Screen.close_screen()
     return inventory_count(item_name) >= target

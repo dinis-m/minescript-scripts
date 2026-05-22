@@ -23,3 +23,6 @@ sleep(1)
 
 if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
     pass
+print("start")
+# temporary test area
+print("end")

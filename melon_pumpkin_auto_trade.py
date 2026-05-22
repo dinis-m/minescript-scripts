@@ -6,15 +6,19 @@ from inventory_handle import fill_to_target
 from time import sleep
 from java import JavaClass
 
+VERSION = "1.0.0"
+MAX_TRADES = 12
+
 Minecraft = JavaClass("net.minecraft.client.Minecraft")
 mc = Minecraft.getInstance() # type: ignore
 
 cost_name = ["minecraft:pumpkin", "minecraft:melon"]
 villager_type = "Farmer"
+villager_count = 43
 teleport_to = "/home farmers"
 
 
-target = 43*12
+target = villager_count*MAX_TRADES
 complete = False
 
 m.echo(f"Require {target} total \n{cost_name} \n({(target + 63 ) // 64} stacks(rounded) required)")
@@ -29,6 +33,7 @@ pre_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4
 first_trade: list[int] = []
 trading = True
 
+Screen.close_screen()
 m.echo("DONT MOVE")
 m.player_press_forward(False)
 sleep(0.5)
@@ -46,6 +51,9 @@ while True:
         #craft emerald blocks
         pass
 
+    if m.screen_name() == "Crafting":
+        break
+
     if m.player_get_targeted_entity(max_distance=2) is not None:
         if m.player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore
             if m.player_get_targeted_entity(max_distance=2) is not None:
@@ -58,8 +66,8 @@ while True:
                     sleep(0.15)
                     process_trade(cost_name[0])
                     process_trade(cost_name[1])
-                    Screen.close_screen()
                     sleep(0.05)
+                    Screen.close_screen()
                     trading = False
                 else:
                     rotate_relative(90,0)
