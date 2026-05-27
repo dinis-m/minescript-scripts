@@ -5,7 +5,7 @@
 """
 import minescript as m
 from minescript_plus import Screen
-from rotation import rotate_relative
+from rotation_1 import rotate_relative
 from trade_process import process_trade
 from inventory_handle import fill_to_target, inventory_count
 from time import sleep
@@ -13,8 +13,8 @@ from java import JavaClass
 
 VERSION = "1.1.0"
 MAX_TRADES = 12
-
-# TODO: complete autonomous functionality of script, crafting emerald blocks, sleeping when night, pathfinding to item chests.
+print(f"Melon and Pumpkin Auto Trade Script v{VERSION}")
+# TODO: complete autonomous functionality of script; auto crafting emerald blocks, sleeping when night, pathfinding to item chests.
 
 Minecraft = JavaClass("net.minecraft.client.Minecraft")
 mc = Minecraft.getInstance() # type: ignore
@@ -26,6 +26,9 @@ teleport_to = "/home farmers"
 
 target = villager_count*MAX_TRADES
 complete = False
+shulker = [-2183, 50, 1064]
+pumpkin_chest = [-2182, 49, 1065]
+melon_chest = [-2182, 49, 1066]
 
 m.echo(f"Require {target} total \n{cost_name} \n({(target + 63 ) // 64} stacks(rounded) required)")
 #first called container MUST be opened first
