@@ -1,6 +1,6 @@
 import minescript as m
 from minescript_plus import Screen
-from rotation import rotate_relative
+from rotation_1 import rotate_relative
 from trade_process import process_trade
 from inventory_handle import fill_to_target, inventory_count
 from time import sleep

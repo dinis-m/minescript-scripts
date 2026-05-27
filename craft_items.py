@@ -1,5 +1,6 @@
 import minescript as m
 from minescript_plus import Server
+import pathfinding as p
 from time import sleep
 from java import JavaClass
 
@@ -23,6 +24,15 @@ sleep(1)
 
 if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
     pass
+
 print("start")
 # temporary test area
+m.execute("/home farmers")
+sleep(3)
+p.pathfind_to(-2181, 50, 1064, True)
+# wait until player is in position
+while True:
+    sleep(0.05)
+    if [int(float(str(x))) for x in m.player_position()] == [-2181, 50, 1064]:
+        break
 print("end")

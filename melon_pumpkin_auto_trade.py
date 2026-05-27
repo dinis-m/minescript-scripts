@@ -5,14 +5,16 @@
 """
 import minescript as m
 from minescript_plus import Screen
-from rotation_1 import rotate_relative
+from rotation_1 import rotate_relative, look_at_block
 from trade_process import process_trade
 from inventory_handle import fill_to_target, inventory_count
+import pathfinding as p
 from time import sleep
 from java import JavaClass
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 MAX_TRADES = 12
+VILLAGER_COUNT = 42
 print(f"Melon and Pumpkin Auto Trade Script v{VERSION}")
 # TODO: complete autonomous functionality of script; auto crafting emerald blocks, sleeping when night, pathfinding to item chests.
 
@@ -21,20 +23,44 @@ mc = Minecraft.getInstance() # type: ignore
 
 cost_name = ["minecraft:pumpkin", "minecraft:melon"]
 villager_type = "Farmer"
-villager_count = 43
+
 teleport_to = "/home farmers"
 
-target = villager_count*MAX_TRADES
+target = VILLAGER_COUNT * MAX_TRADES
 complete = False
 
+pumpkin_chest = [-2182, 49, 1065]
+melon_chest = [-2182, 49, 1066]
+
+m.execute(teleport_to)
+sleep(3) # wait to finish teleporting
+
 m.echo(f"Require {target} total \n{cost_name} \n({(target + 63 ) // 64} stacks(rounded) required)")
-#first called container MUST be opened first
+
+p.pathfind_to(-2181, 50, 1064, True)
+# wait until player is in position
+while True:
+    sleep(0.05)
+    if [int(float(str(x))) for x in m.player_position()] == [-2181, 50, 1064]:
+        break
+
+# get items from chests until target is reached
 while not complete:
-    while not Screen.wait_screen():
-        sleep(0.05)
     if inventory_count(cost_name[0]) >= target and inventory_count(cost_name[1]) >= target:
         break
-    complete = fill_to_target(cost_name[0], target) and fill_to_target(cost_name[1], target)
+    sleep(0.15)
+    # open container and fill inventory with pumpkins
+    look_at_block(pumpkin_chest[0], pumpkin_chest[1], pumpkin_chest[2])
+    m.player_press_use(True)
+    Screen.wait_screen()
+    pumpkins = fill_to_target(cost_name[0], target)
+    sleep(0.15)
+    # open container and fill inventory with melons
+    look_at_block(melon_chest[0], melon_chest[1], melon_chest[2])
+    m.player_press_use(True)
+    Screen.wait_screen()
+    melons = fill_to_target(cost_name[1], target)
+    complete = pumpkins and melons
 
 #forces camera to turn if facing the same villager.
 pre_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
@@ -53,7 +79,6 @@ m.player_press_forward(True)
 while True:
     m.flush()
     
-    # TODO: craft all emeralds into blocks
     # crafting table class: net.minecraft.class_479
     if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
         #craft emerald blocks
