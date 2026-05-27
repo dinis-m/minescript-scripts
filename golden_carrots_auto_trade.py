@@ -2,7 +2,7 @@ import minescript as m
 from minescript_plus import Screen
 from rotation import rotate_relative
 from trade_process import process_trade
-from inventory_handle import fill_to_target
+from inventory_handle import fill_to_target, inventory_count
 from time import sleep
 
 result_name = ["minecraft:golden_carrot"]
@@ -19,14 +19,16 @@ m.echo(f"Require {target} total \n{cost_name} \n({(target + 63 ) // 64} stacks(r
 while not complete:
     while not Screen.wait_screen():
         sleep(0.05)
-    #break loop if player has sufficient items in inventory for trades
+    if inventory_count(cost_name[0]) >= target:
+        break
     complete = fill_to_target(cost_name[0], target)
 
-
+#forces camera to turn if facing the same villager.
 pre_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
 first_trade: list[int] = []
 trading = True
 
+Screen.close_screen()
 m.echo("DONT MOVE")
 m.player_press_forward(False)
 sleep(0.5)
@@ -50,7 +52,7 @@ while True:
                     if first_trade == [int(float(str(x))) for x in pre_trade]:
                         break
                     m.player_press_use(True)
-                    sleep(0.3)
+                    Screen.wait_screen()
                     process_trade(result_name[0])
                     Screen.close_screen()
                     sleep(0.05)

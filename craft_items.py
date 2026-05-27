@@ -25,7 +25,4 @@ if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
     pass
 print("start")
 # temporary test area
-for i in range(20):
-    print(f"Player latency: {Server.get_ping()}")
-    sleep(1)
 print("end")

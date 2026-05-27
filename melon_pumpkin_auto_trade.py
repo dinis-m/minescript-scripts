@@ -1,3 +1,8 @@
+"""
+    Autonomous melon and pumpkin trading script for 1.20+ versions of Minecraft. 
+    Trades with farmers to acquire emeralds, then crafts them into blocks. 
+    Must set a teleportation point to the villagers.
+"""
 import minescript as m
 from minescript_plus import Screen
 from rotation import rotate_relative
@@ -8,6 +13,8 @@ from java import JavaClass
 
 VERSION = "1.1.0"
 MAX_TRADES = 12
+
+# TODO: complete autonomous functionality of script, crafting emerald blocks, sleeping when night, pathfinding to item chests.
 
 Minecraft = JavaClass("net.minecraft.client.Minecraft")
 mc = Minecraft.getInstance() # type: ignore
