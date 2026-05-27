@@ -26,9 +26,6 @@ teleport_to = "/home farmers"
 
 target = villager_count*MAX_TRADES
 complete = False
-shulker = [-2183, 50, 1064]
-pumpkin_chest = [-2182, 49, 1065]
-melon_chest = [-2182, 49, 1066]
 
 m.echo(f"Require {target} total \n{cost_name} \n({(target + 63 ) // 64} stacks(rounded) required)")
 #first called container MUST be opened first
