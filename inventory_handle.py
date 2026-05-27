@@ -40,6 +40,9 @@ def fill_to_target(item_name: str, target: int) -> bool:
 
     for slot in range(0, stacks_needed):
         try:
+            if stacks_needed == 1:
+                Inventory.shift_click_slot(item_slots[slot+1])
+                break
             Inventory.shift_click_slot(item_slots[slot])
             sleep(0.1)
         except IndexError:

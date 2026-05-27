@@ -1,5 +1,5 @@
 import minescript as m
-from minescript_plus import Inventory
+from minescript_plus import Server
 from time import sleep
 from java import JavaClass
 

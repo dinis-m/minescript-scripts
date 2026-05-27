@@ -2,7 +2,7 @@ import minescript as m
 from minescript_plus import Screen
 from rotation import rotate_relative
 from trade_process import process_trade
-from inventory_handle import fill_to_target
+from inventory_handle import fill_to_target, inventory_count
 from time import sleep
 
 #TODO: figure out how to send data from this script to a web page
@@ -24,6 +24,14 @@ while not complete:
         sleep(0.05)
     #modify statement if trading for a result/cost
     #complete = fill_to_target(cost_name[2], target)
+    
+
+#first called container MUST be opened first
+while not complete:
+    while not Screen.wait_screen():
+        sleep(0.05)
+    if inventory_count(cost_name[0]) >= target:
+        break
     complete = fill_to_target(cost_name[0], target) and fill_to_target(cost_name[1], target)
 
 
@@ -54,7 +62,7 @@ while True:
                     if first_trade == [int(float(str(x))) for x in pre_trade]:
                         break
                     m.player_press_use(True)
-                    sleep(0.15)
+                    Screen.wait_screen()
                     #modify for the trades being made
                     process_trade(cost_name[0])
                     process_trade(cost_name[1])
