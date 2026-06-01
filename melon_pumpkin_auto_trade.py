@@ -13,7 +13,7 @@ import pathfinding as p
 from time import sleep
 from java import JavaClass
 
-VERSION = "1.2.1"
+VERSION = "1.3.1"
 MAX_TRADES = 12
 VILLAGER_COUNT = 63
 m.echo(f"Melon and Pumpkin Auto Trade Script v{VERSION}")
@@ -27,9 +27,6 @@ pumpkin_chest = [-2182, 49, 1065]
 melon_chest = [-2182, 49, 1066]
 pre_trade = [x.position for x in m.entities(name=villager_type, max_distance=1.4)]
 first_trade: list[int] = []
-
-Minecraft = JavaClass("net.minecraft.client.Minecraft")
-mc = Minecraft.getInstance() # type: ignore
 
 complete = False
 
@@ -91,12 +88,14 @@ while True:
                         # wait until player is in position
                         while True: # separate function?
                             sleep(0.05)
-                            if [int(float(str(x))) for x in m.player_position()] == [-2174, 50, 1064]:
+                            if [int(float(str(x))) for x in m.player_position()] == [-2173, 50, 1064]:
                                 break
                         look_at_block(-2173, 50, 1064)
-                        sleep(0.1)
+                        m.echo("looking at crafting table")
                         craft_emerald_blocks()
-                        look_at_block(-2173, 50, 1065)
+                        m.echo("crafted")
+                        look_at_block(-2173, 50, 1066)
+                        m.echo("looking at chest")
                         break
                     m.player_press_use(True)
                     Screen.wait_screen()

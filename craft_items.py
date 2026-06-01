@@ -13,12 +13,12 @@ mc = Minecraft.getInstance()
 craft_for = ceil((inventory_count("minecraft:emerald") // 9) / 64)
 
 def craft_emerald_blocks():
-    sleep(0.1)
+    m.echo("crafting emerald blocks...")
     m.player_press_use(True)
-    Screen.wait_screen()
-    m.player_press_use(False)
+    Screen.wait_screen("", 2000)
     for _ in range(craft_for):
-        sleep(0.1)
+        sleep(0.3)
         Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(491), True)
+        sleep(0.1)
         Inventory.shift_click_slot(0)
     Screen.close_screen()
