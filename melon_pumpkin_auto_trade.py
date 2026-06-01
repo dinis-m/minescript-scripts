@@ -14,7 +14,7 @@ from java import JavaClass
 
 VERSION = "1.2.1"
 MAX_TRADES = 12
-VILLAGER_COUNT = 42
+VILLAGER_COUNT = 63
 m.echo(f"Melon and Pumpkin Auto Trade Script v{VERSION}")
 # TODO: complete autonomous functionality of script; auto crafting emerald blocks, sleeping when night.
 
@@ -83,6 +83,7 @@ while True:
     if m.screen_name() == "Crafting":
         break
 
+    # wrap this in try except
     if m.player_get_targeted_entity(max_distance=2) is not None:
         if m.player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore
             if m.player_get_targeted_entity(max_distance=2) is not None:
@@ -92,7 +93,7 @@ while True:
                     if first_trade == [int(float(str(x))) for x in pre_trade]:
                         p.pathfind_to(-2176, 50, 1067, True)
                         # wait until player is in position
-                        while True:
+                        while True: # separate function?
                             sleep(0.05)
                             if [int(float(str(x))) for x in m.player_position()] == [-2175, 50, 1067]:
                                 break

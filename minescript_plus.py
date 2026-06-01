@@ -428,8 +428,8 @@ class Inventory:
         container_menu = screen.getMenu()
         mouse_button = 0
         # handleInventoryMouseClick(int syncId, int slotId, int button, ClickType arg3, Player arg4)
-        mc.gameMode.handleInventoryMouseClick(
-            container_menu.containerId, slot, mouse_button, ClickType.QUICK_MOVE, mc.player)
+        mc.gameMode.handleInventoryMouseClick( # type: ignore
+            container_menu.containerId, slot, mouse_button, ClickType.QUICK_MOVE, mc.player) # type: ignore
 
         return True
 
@@ -451,8 +451,8 @@ class Inventory:
 
         container_menu = screen.getMenu()
         # handleInventoryMouseClick(int syncId, int slotId, int button, ClickType arg3, Player arg4)
-        mc.gameMode.handleInventoryMouseClick(
-            container_menu.containerId, inv_slot, hotbar_slot, ClickType.SWAP, mc.player)
+        mc.gameMode.handleInventoryMouseClick( # type: ignore
+            container_menu.containerId, inv_slot, hotbar_slot, ClickType.SWAP, mc.player) # type: ignore
 
         return True
 

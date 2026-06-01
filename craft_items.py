@@ -1,32 +1,30 @@
 import minescript as m
-from minescript_plus import Server
-import pathfinding as p
-import rotation_1 as r
+from minescript_plus import Client, Inventory, Screen
+from inventory_handle import inventory_count
 from time import sleep
 from java import JavaClass
-
-Minecraft = JavaClass("net.minecraft.client.Minecraft")
-CraftingInput = JavaClass("net.minecraft.world.item.crafting.CraftingInput")
-CraftingMenu = JavaClass("net.minecraft.world.inventory.CraftingMenu")
-RecipeManager = JavaClass("net.minecraft.world.item.crafting.RecipeManager")
-mc = Minecraft.getInstance() # type: ignore
-
-def craft_item(item_name: str):
-    """
-        Craft the specified item if possible.
-
-        Precondition: The item name must be in the crafting recipe book.
-            Player must be in the crafting screen.
-    """
-    m.echo(f"Attempting to craft {item_name}...")
+from math import ceil
 
 
-sleep(1)
+Minecraft = JavaClass("net.minecraft.class_310")
+RecipeDisplayId = JavaClass("net.minecraft.world.item.crafting.display.RecipeDisplayId")
+mc = Minecraft.getInstance()
 
-if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
-    pass
+def craft_emerald_block():
+    m.player_press_use(True)
+    Screen.wait_screen()
+    m.player_press_use(False)
+    Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(491), True)
+    Inventory.shift_click_slot(0)
 
-print("start")
-# temporary test area
 
-print("end")
+m.echo(ceil((inventory_count("minecraft:emerald") // 9) / 64))
+craft_for = ceil((inventory_count("minecraft:emerald") // 9) / 64)
+
+m.player_press_use(True)
+Screen.wait_screen()
+m.player_press_use(False)
+for i in range(craft_for):
+    sleep(0.01)
+    Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(491), True)
+    Inventory.shift_click_slot(0)

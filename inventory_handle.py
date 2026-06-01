@@ -5,13 +5,11 @@ from time import sleep
 VERSION = "1.0.0"
 
 #Currently only works if first called container in script is opened first
-
 def inventory_count(item_name: str) -> int:
     return sum(
         stack.count for stack in m.player_inventory()
         if stack.item == item_name
     )
-
 
 def fill_to_target(item_name: str, target: int) -> bool:
     """
