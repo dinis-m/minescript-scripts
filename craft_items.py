@@ -10,21 +10,15 @@ Minecraft = JavaClass("net.minecraft.class_310")
 RecipeDisplayId = JavaClass("net.minecraft.world.item.crafting.display.RecipeDisplayId")
 mc = Minecraft.getInstance()
 
-def craft_emerald_block():
+craft_for = ceil((inventory_count("minecraft:emerald") // 9) / 64)
+
+def craft_emerald_blocks():
+    sleep(0.1)
     m.player_press_use(True)
     Screen.wait_screen()
     m.player_press_use(False)
-    Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(491), True)
-    Inventory.shift_click_slot(0)
-
-
-m.echo(ceil((inventory_count("minecraft:emerald") // 9) / 64))
-craft_for = ceil((inventory_count("minecraft:emerald") // 9) / 64)
-
-m.player_press_use(True)
-Screen.wait_screen()
-m.player_press_use(False)
-for i in range(craft_for):
-    sleep(0.01)
-    Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(491), True)
-    Inventory.shift_click_slot(0)
+    for _ in range(craft_for):
+        sleep(0.1)
+        Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(491), True)
+        Inventory.shift_click_slot(0)
+    Screen.close_screen()

@@ -8,6 +8,7 @@ from minescript_plus import Screen
 from rotation_1 import rotate_relative, look_at_block
 from trade_process import process_trade
 from inventory_handle import fill_to_target, inventory_count
+from craft_items import craft_emerald_blocks
 import pathfinding as p
 from time import sleep
 from java import JavaClass
@@ -74,11 +75,6 @@ trading = True
 
 while True:
     m.flush()
-    
-    # crafting table class: net.minecraft.class_479
-    if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
-        # craft emerald blocks
-        pass
 
     if m.screen_name() == "Crafting":
         break
@@ -91,14 +87,16 @@ while True:
                     pre_trade = m.player_get_targeted_entity().position # type: ignore
                     m.player_press_forward(False)
                     if first_trade == [int(float(str(x))) for x in pre_trade]:
-                        p.pathfind_to(-2176, 50, 1067, True)
+                        p.pathfind_to(-2174, 50, 1064, True)
                         # wait until player is in position
                         while True: # separate function?
                             sleep(0.05)
-                            if [int(float(str(x))) for x in m.player_position()] == [-2175, 50, 1067]:
+                            if [int(float(str(x))) for x in m.player_position()] == [-2174, 50, 1064]:
                                 break
-                        look_at_block(-2176, 50, 1069)
-                        m.player_press_use(True)
+                        look_at_block(-2173, 50, 1064)
+                        sleep(0.1)
+                        craft_emerald_blocks()
+                        look_at_block(-2173, 50, 1065)
                         break
                     m.player_press_use(True)
                     Screen.wait_screen()
