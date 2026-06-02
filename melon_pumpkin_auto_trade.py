@@ -16,7 +16,10 @@ VERSION = "1.3.3"
 MAX_TRADES = 12
 VILLAGER_COUNT = 63
 echo(f"Melon and Pumpkin Auto Trade Script v{VERSION}")
-# TODO: complete autonomous functionality of script; auto crafting emerald blocks, sleeping when night.
+# TODO: complete autonomous functionality of script: 
+# auto craft emerald blocks. Done
+# sleeping when night.
+# repeat entire script once, if activated during the day.
 
 target = VILLAGER_COUNT * MAX_TRADES
 cost_name = ["minecraft:pumpkin", "minecraft:melon"]
@@ -114,6 +117,7 @@ while True:
                             for slot in range(len(slots)):
                                 sleep(0.1)
                                 Inventory.shift_click_slot(slots[slot])
+                            Screen.close_screen()
                             break
                         player_press_use(True)
                         Screen.wait_screen()
