@@ -12,7 +12,7 @@ from craft_items import craft_emerald_blocks
 import pathfinding as p
 from time import sleep
 
-VERSION = "1.3.2"
+VERSION = "1.3.3"
 MAX_TRADES = 12
 VILLAGER_COUNT = 63
 echo(f"Melon and Pumpkin Auto Trade Script v{VERSION}")
@@ -110,7 +110,7 @@ while True:
                             Screen.wait_screen()
                             slots = get_slots("minecraft:emerald_block")
                             decho(f"slots: {slots}")
-                            for slot in range(0, len(slots)-1):
+                            for slot in range(len(slots)):
                                 sleep(0.1)
                                 Inventory.shift_click_slot(slots[slot])
                             break

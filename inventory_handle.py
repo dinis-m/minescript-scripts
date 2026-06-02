@@ -1,4 +1,4 @@
-from minescript import container_get_items, echo, player_inventory, screen_name
+from minescript import container_get_items, echo, player_inventory, screen_name, player_press_use
 from minescript_plus import Inventory, Screen
 from time import sleep
 
@@ -66,7 +66,7 @@ def get_slots(item_name: str) -> list[int]:
     Pre-condition: item_name must be valid ItemStack.item.
     """
     item_slots = [
-        item.slot for item in player_inventory()
+        item.slot for item in container_get_items()
         if item.item == item_name
     ]
     return item_slots
