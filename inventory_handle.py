@@ -2,9 +2,7 @@ from minescript import container_get_items, echo, player_inventory, screen_name,
 from minescript_plus import Inventory, Screen
 from time import sleep
 
-VERSION = "1.0.0"
-
-# BUG: script will loop when item count is at target but doesnt know inventory has reached target already, will fix in future update
+VERSION = "1.1.0"
 
 #Currently only works if first called container in script is opened first
 def inventory_count(item_name: str) -> int:

@@ -52,6 +52,7 @@ else:
 
 echo(f"Require {target} total \n{cost_name} \nRequire {(target + 63 ) // 64} stacks(rounded) each")
 # get items from chests until target is reached
+# BUG: sometimes will infinitely loop melons chest, maybe add inventory checking helper function to fix? will fix in future update
 while not complete:
     sleep(0.05)
     # open container and fill inventory with pumpkins
