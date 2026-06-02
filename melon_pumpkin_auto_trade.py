@@ -4,10 +4,10 @@
     Must set a teleportation point to the villagers.
 """
 from minescript import echo, entities, execute, flush, player_position, player_press_forward, player_press_use, player_get_targeted_entity, screen_name
-from minescript_plus import Screen
+from minescript_plus import Screen, Inventory
 from rotation_1 import rotate_relative, look_at_block
 from trade_process import process_trade
-from inventory_handle import fill_to_target, inventory_count
+from inventory_handle import fill_to_target, inventory_count, get_slots
 from craft_items import craft_emerald_blocks
 import pathfinding as p
 from time import sleep
@@ -33,7 +33,7 @@ complete = False
 debug = False
 
 if debug:
-    echo("§aDEBUGGING ENABLED")
+    echo("§aDEBUGGING ENABLED FOR: melon_pumpkin_auto_trade.py")
 
 def decho(*args):
     if debug:
@@ -88,33 +88,43 @@ while True:
         break
 
     # wrap this in try except
-    if player_get_targeted_entity(max_distance=2) is not None:
-        if player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore
-            if player_get_targeted_entity(max_distance=2) is not None:
-                if player_get_targeted_entity().position != pre_trade: # type: ignore
-                    pre_trade = player_get_targeted_entity().position # type: ignore
-                    player_press_forward(False)
-                    if first_trade == [int(float(str(x))) for x in pre_trade]:
-                        p.pathfind_to(-2174, 50, 1064, True)
-                        # wait until player is in position
-                        while True: # separate function?
-                            sleep(0.05)
-                            if [int(float(str(x))) for x in player_position()] == [-2173, 50, 1064]:
-                                break
-                        look_at_block(-2173, 50, 1064)
-                        decho("attempting to craft")
-                        craft_emerald_blocks()
-                        look_at_block(-2173, 50, 1066)
-                        break
-                    player_press_use(True)
-                    Screen.wait_screen()
-                    process_trade(cost_name[0])
-                    process_trade(cost_name[1])
-                    sleep(0.05)
-                    Screen.close_screen()
-                    trading = False
-                else:
-                    rotate_relative(90,0)
+    try:
+        if player_get_targeted_entity(max_distance=2) is not None:
+            if player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore
+                if player_get_targeted_entity(max_distance=2) is not None:
+                    if player_get_targeted_entity().position != pre_trade: # type: ignore
+                        pre_trade = player_get_targeted_entity().position # type: ignore
+                        player_press_forward(False)
+                        if first_trade == [int(float(str(x))) for x in pre_trade]:
+                            p.pathfind_to(-2174, 50, 1064, True)
+                            # wait until player is in position
+                            while True: # separate function?
+                                sleep(0.05)
+                                if [int(float(str(x))) for x in player_position()] == [-2173, 50, 1064]:
+                                    break
+                            look_at_block(-2173, 50, 1064)
+                            decho("attempting to craft")
+                            craft_emerald_blocks()
+                            look_at_block(-2173, 50, 1066)
+                            player_press_use(True)
+                            Screen.wait_screen()
+                            slots = get_slots("minecraft:emerald_block")
+                            decho(f"slots: {slots}")
+                            for slot in range(0, len(slots)-1):
+                                sleep(0.1)
+                                Inventory.shift_click_slot(slots[slot])
+                            break
+                        player_press_use(True)
+                        Screen.wait_screen()
+                        process_trade(cost_name[0])
+                        process_trade(cost_name[1])
+                        sleep(0.05)
+                        Screen.close_screen()
+                        trading = False
+                    else:
+                        rotate_relative(90,0)
+    except Exception as e:
+        decho(f"Error: {e}")
 
     if not trading:
         if len(first_trade) == 0:

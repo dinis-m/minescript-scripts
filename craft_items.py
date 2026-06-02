@@ -11,6 +11,9 @@ mc = Minecraft.getInstance() # type: ignore
 
 debug = False
 
+if debug:
+    echo("§aDEBUGGING ENABLED FOR: craft_items.py")
+
 def decho(*args):
     if debug:
         echo(*args)
