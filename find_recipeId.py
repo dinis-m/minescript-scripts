@@ -46,6 +46,7 @@ mc = Minecraft.getInstance()
 player = mc.player
 connection = mc.method_1562()  # getConnection()
 menu = player.containerMenu
+RecipeDisplayId = JavaClass("net.minecraft.world.item.crafting.display.RecipeDisplayId")
 
 container_id = menu.containerId
 

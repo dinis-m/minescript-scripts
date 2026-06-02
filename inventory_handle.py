@@ -4,8 +4,15 @@ from time import sleep
 
 VERSION = "1.0.0"
 
+# BUG: script will loop when item count is at target but doesnt know inventory has reached target already, will fix in future update
+
 #Currently only works if first called container in script is opened first
 def inventory_count(item_name: str) -> int:
+    """
+    Return the total count of item_name in the player's inventory.
+
+    Pre-condition: item_name must be valid ItemStack.item.
+    """
     return sum(
         stack.count for stack in m.player_inventory()
         if stack.item == item_name
@@ -38,6 +45,8 @@ def fill_to_target(item_name: str, target: int) -> bool:
 
     for slot in range(0, stacks_needed):
         try:
+            if count >= target:
+                return True
             if stacks_needed == 1:
                 Inventory.shift_click_slot(item_slots[slot+1])
                 break
