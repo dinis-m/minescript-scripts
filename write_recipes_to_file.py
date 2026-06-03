@@ -1,3 +1,5 @@
+import os
+import re
 import minescript as m
 from time import sleep
 from java import JavaClass
@@ -61,4 +63,26 @@ recipe_book = player.method_3130()
 known_field = get_field(recipe_book, "field_54810", "recipes", "b")
 known_recipes = known_field.get(recipe_book)
 
-m.echo("Known recipe displays:", str(known_recipes).split('emerald_block')[2])  # Print all known recipes up to emerald_block
+output_path = r"C:\Users\dinis\AppData\Roaming\.minecraft\minescript\known_recipes.txt"
+
+text = str(known_recipes)
+
+pairs = [
+    (item, int(index))
+    for index, item in re.findall(
+        r"class_10298\[index=(\d+)\]=.*?result=.*?stack=\d+\s+(minecraft:[a-z0-9_]+)",
+        text,
+        flags=re.DOTALL
+    )
+]
+
+s = str(pairs)
+
+m.echo("Writing to:", output_path)
+m.echo("Text length:", len(text))
+
+with open(output_path, "w", encoding="utf-8") as file:
+    file.write(s.replace(",", ",\n"))
+
+m.echo("Done")
+m.echo("File exists:", os.path.exists(output_path))

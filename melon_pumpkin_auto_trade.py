@@ -139,4 +139,4 @@ while True:
         sleep(0.4)
         trading = True
 
-execute("\\killjob -1")
+execute(r"\killjob -1")

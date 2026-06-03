@@ -1,16 +1,14 @@
-import minescript as m
-from minescript_plus import Client
+from minescript import echo, player_press_use
+from minescript_plus import Client, Inventory, Screen
+from inventory_handle import inventory_count
 from time import sleep
 from java import JavaClass
 
 Minecraft = JavaClass("net.minecraft.class_310")
-mc = Minecraft.getInstance()
-m.player_press_use(True)
-sleep(2)
-
 RecipeDisplayId = JavaClass("net.minecraft.world.item.crafting.display.RecipeDisplayId")
-Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(491), True)
+mc = Minecraft.getInstance() # type: ignore
 
-m.player_press_use(False)
+player_press_use(True)
+Screen.wait_screen()
 
-m.execute("\\killjob -1")
+Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(1039), True) # type: ignore
