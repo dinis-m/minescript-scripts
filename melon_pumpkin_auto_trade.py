@@ -8,7 +8,7 @@ from minescript_plus import Screen, Inventory
 from rotation_1 import rotate_relative, look_at_block
 from trade_process import process_trade
 from inventory_handle import fill_to_target, inventory_count, get_slots
-from craft_items import craft_emerald_blocks
+from craft_items import craft_items
 import pathfinding as p
 from time import sleep
 
@@ -108,7 +108,7 @@ while True:
                                     break
                             look_at_block(-2173, 50, 1064)
                             decho("attempting to craft")
-                            craft_emerald_blocks()
+                            craft_items("minecraft:emerald_block")
                             look_at_block(-2173, 50, 1066)
                             player_press_use(True)
                             Screen.wait_screen()

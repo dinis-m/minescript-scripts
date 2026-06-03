@@ -1,11 +1,12 @@
 from minescript import echo, player_press_use
 from minescript_plus import Client, Inventory, Screen
 from inventory_handle import inventory_count
+from recipe_helper import get_recipes_id
 from time import sleep
 from java import JavaClass
 from math import ceil
 
-Minecraft = JavaClass("net.minecraft.class_310")
+Minecraft = JavaClass("net.minecraft.client.Minecraft")
 RecipeDisplayId = JavaClass("net.minecraft.world.item.crafting.display.RecipeDisplayId")
 mc = Minecraft.getInstance() # type: ignore
 
@@ -18,7 +19,7 @@ def decho(*args):
     if debug:
         echo(*args)
 
-def craft_emerald_blocks():
+def craft_items(item_name: str, craft_all: bool = True):
     craft_for = ceil((inventory_count("minecraft:emerald") // 9) / 64)
     decho("crafting emerald blocks...")
     player_press_use(True)
@@ -28,7 +29,7 @@ def craft_emerald_blocks():
     for _ in range(craft_for):
         sleep(0.1)
         decho("sending recipe packet...")
-        Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(491), True) # type: ignore
+        Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(get_recipes_id(item_name)), craft_all) # type: ignore
         decho("recipe packet sent")
         sleep(0.05)
         Inventory.shift_click_slot(0)
