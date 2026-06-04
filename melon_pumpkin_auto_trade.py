@@ -32,11 +32,8 @@ first_trade: list[int] = []
 
 complete = False
 
-# Set to True to debug
+# Set True to debug
 debug = False
-
-if debug:
-    echo("§aDEBUGGING ENABLED FOR: melon_pumpkin_auto_trade.py")
 
 def decho(*args):
     if debug:
@@ -91,7 +88,6 @@ while True:
     if screen_name() == "Crafting":
         break
 
-    # wrap this in try except
     try:
         if player_get_targeted_entity(max_distance=2) is not None:
             if player_get_targeted_entity(max_distance=2).name == villager_type: # type: ignore

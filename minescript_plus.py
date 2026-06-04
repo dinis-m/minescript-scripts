@@ -1,8 +1,8 @@
 """
     Minescript Plus
-    Version: 0.16.2-alpha
+    Version: 0.16.4-alpha
     Author: RazrCraft
-    Date: 2026-03-04
+    Date: 2026-03-28
 
     User-friendly API for scripts that adds extra functionality to the
     Minescript mod, using java built-in module and other libraries.
@@ -25,6 +25,10 @@ from sys import exit, stderr, version # pylint: disable=W0622
 from sys import version_info as svi
 from time import sleep
 from math import floor
+# --- Imports for 1.21.11+ ---
+from base64 import b64decode
+from json import loads
+# ----------------------------
 from typing import Callable, Literal, Any
 from dataclasses import dataclass, asdict
 from minescript import (set_default_executor, EventQueue, EventType, EntityData, script_loop, render_loop, ItemStack, TargetedBlock, 
@@ -43,7 +47,7 @@ except ModuleNotFoundError:
 set_default_executor(script_loop)
 echo_json.set_required_executor(render_loop)
 
-_ver: str = "0.16.2-alpha"
+_ver: str = "0.16.4-alpha"
 
 if svi < (3, 10):
     exit("Minescript Plus requires Python 3.10 or later.")
@@ -55,10 +59,6 @@ if __name__ == "__main__":
 _mc_ver = ver_info().minecraft
 _map_path1 = f"minescript/system/mappings/{_mc_ver}/{_mc_ver}.tiny"
 _map_path2 = f"minescript/system/mappings/{_mc_ver}/client.txt"
-
-if not path.exists(_map_path1) or not path.exists(_map_path2):
-    print("Error: No mappings found. Use this in chat first: \\install_mappings")
-    exit(1)
 
 fabric = ver_info().minecraft_class_name == "net.minecraft.class_310"
 
@@ -131,7 +131,7 @@ class Listener:
         condition_function: Callable,
         once: bool,
         manager,
-        check_interval: float = 0.5,
+        check_interval: float = 0.05,
     ):
         self.event_name: str = event_name
         self.callback: Callable = callback
@@ -239,9 +239,10 @@ def __subtitle_event_callback():
     return False, (), {}
 
 def __actionbar_event_callback():
-    r = Gui.get_actionbar()
-    if r is not None:
-        return True, (r,), {}
+    r = _get_private_field(mc.gui, "overlayMessageTime")
+    if r != 0:
+        m = Gui.get_actionbar()
+        return True, (m,), {}
     return False, (), {}
 
 def __open_screen_event_callback():
@@ -257,7 +258,7 @@ Event.define_event(EventDefinition(
 Event.define_event(EventDefinition(
     "on_actionbar", mode="callback", condition=__actionbar_event_callback))
 Event.define_event(EventDefinition(
-    "on_open_screen", mode="callback", condition=__open_screen_event_callback, interval=0.05))
+    "on_open_screen", mode="callback", condition=__open_screen_event_callback))
 
 
 class Keybind:
@@ -319,7 +320,7 @@ Clazz = JavaClass("java.lang.Class")
 Float = JavaClass("java.lang.Float")
 Minescript = JavaClass("net.minescript.common.Minescript")
 Minecraft = JavaClass("net.minecraft.client.Minecraft")
-ClickType = JavaClass("net.minecraft.world.inventory.ClickType")
+ContainerInput = JavaClass("net.minecraft.world.inventory.ContainerInput")
 Component = JavaClass("net.minecraft.network.chat.Component")
 KeyMapping = JavaClass("net.minecraft.client.KeyMapping")
 InputConstants = JavaClass("com.mojang.blaze3d.platform.InputConstants")
@@ -332,10 +333,8 @@ LightLayer = JavaClass("net.minecraft.world.level.LightLayer")
 mappings = Minescript.mappingsLoader.get()
 mc = Minecraft.getInstance()
 
-mc.gui.setOverlayMessage(None, False)
-
 """
-ClickType
+ContainerInput
 Enum Constant   Description
 CLONE           Clones the item in the slot.
 PICKUP          Performs a normal slot click.
@@ -403,9 +402,9 @@ class Inventory:
 
         container_menu = screen.getMenu()
         mouse_button = 1 if right_button else 0
-        # handleInventoryMouseClick(int syncId, int slotId, int button, ClickType arg3, Player arg4)
-        mc.gameMode.handleInventoryMouseClick(
-            container_menu.containerId, slot, mouse_button, ClickType.PICKUP, mc.player)
+        # handleContainerInput(int syncId, int slotId, int button, ContainerInput arg3, Player arg4)
+        mc.gameMode.handleContainerInput(
+            container_menu.containerId, slot, mouse_button, ContainerInput.PICKUP, mc.player)
 
         return True
 
@@ -427,9 +426,9 @@ class Inventory:
 
         container_menu = screen.getMenu()
         mouse_button = 0
-        # handleInventoryMouseClick(int syncId, int slotId, int button, ClickType arg3, Player arg4)
-        mc.gameMode.handleInventoryMouseClick( # type: ignore
-            container_menu.containerId, slot, mouse_button, ClickType.QUICK_MOVE, mc.player) # type: ignore
+        # handleContainerInput(int syncId, int slotId, int button, ContainerInput arg3, Player arg4)
+        mc.gameMode.handleContainerInput(
+            container_menu.containerId, slot, mouse_button, ContainerInput.QUICK_MOVE, mc.player)
 
         return True
 
@@ -450,9 +449,9 @@ class Inventory:
             return False
 
         container_menu = screen.getMenu()
-        # handleInventoryMouseClick(int syncId, int slotId, int button, ClickType arg3, Player arg4)
-        mc.gameMode.handleInventoryMouseClick( # type: ignore
-            container_menu.containerId, inv_slot, hotbar_slot, ClickType.SWAP, mc.player) # type: ignore
+        # handleContainerInput(int syncId, int slotId, int button, ContainerInput arg3, Player arg4)
+        mc.gameMode.handleContainerInput(
+            container_menu.containerId, inv_slot, hotbar_slot, ContainerInput.SWAP, mc.player)
 
         return True
 
@@ -490,9 +489,9 @@ class Inventory:
         container_menu = screen.getMenu()
         mouse_button = 0
         for slot in slots:
-            # handleInventoryMouseClick(int syncId, int slotId, int button, ClickType arg3, Player arg4)
-            mc.gameMode.handleInventoryMouseClick(
-                container_menu.containerId, slot, mouse_button, ClickType.QUICK_MOVE, mc.player)
+            # handleContainerInput(int syncId, int slotId, int button, ContainerInput arg3, Player arg4)
+            mc.gameMode.handleContainerInput(
+                container_menu.containerId, slot, mouse_button, ContainerInput.QUICK_MOVE, mc.player)
 
         return True
 
@@ -554,13 +553,13 @@ class Inventory:
             nbt: dict | None = _get_nbt(it.nbt)
             if nbt is not None and "components" in nbt:
                 comp = nbt.get("components")
-                if "minecraft:custom_name" in comp and comp.get("minecraft:custom_name") == cust_name:  # type: ignore
+                if "minecraft:custom_name" in comp and cust_name in str(comp):  # type: ignore
                     return it.slot
 
         return None
 
     @staticmethod
-    def count_total(inventory: list[ItemStack], item_id: int) -> int:
+    def count_total(inventory: list[ItemStack], item_id: str) -> int:
         """
         Counts the total number of items with a specific item ID in the given inventory.
 
@@ -569,12 +568,21 @@ class Inventory:
             item_id (int): The ID of the item to count.
 
         Returns:
-            int: The total count of items with the specified item ID in the inventory.
+            str: The total count of items with the specified item ID in the inventory.
         """
         return sum(stack.count for stack in inventory if stack.item == item_id)
 
     @staticmethod
     def get_lore(item: ItemStack=None) -> str | None:
+        """
+        Gets the lore text of the holding item or the specified item.
+
+        Args:
+            item (ItemStack): The item to get the lore from. If None, it'll try to get it from the holding item.
+
+        Returns:
+            str | None: The lore of the item, or None if it doesn't have any.
+        """
         if item is None:
             item = player_hand_items().main_hand
         if item is not None:
@@ -588,6 +596,23 @@ class Inventory:
                 if "minecraft:lore" in comp:  # type: ignore
                     return comp.get("minecraft:lore")
         return None
+
+    @staticmethod
+    def get_container_slot_count() -> int:
+        """
+        Gets the size of the currently open container.
+        Returns:
+            int: The number of slots of the currently open container if one is open, `-1` if no container is open.
+        """
+        screen = mc.screen
+        if screen is None:
+            return False
+
+        container_menu = screen.getMenu()
+        try:
+            return container_menu.getContainer().getContainerSize()
+        except Exception:
+            return -1
 
 # # # SCREEN # # #
 
@@ -637,7 +662,8 @@ with render_loop:
 
 # # # GUI # # #
 
-    class Gui:
+class Gui:
+    with script_loop:
         @staticmethod
         def get_title() -> str | None:
             """
@@ -674,10 +700,10 @@ with render_loop:
             """
             overlayMessageString = _get_private_field(mc.gui, "overlayMessageString")
             if overlayMessageString is not None:
-                overlayMessageString = overlayMessageString.tryCollapseToString()
-                mc.gui.setOverlayMessage(None, False)
+                overlayMessageString = overlayMessageString.getString()
             return overlayMessageString  # type: ignore
 
+with render_loop:
         @staticmethod
         def set_title(text: str) -> None:
             """
@@ -752,7 +778,6 @@ with render_loop:
             """
             mc.gui.clearTitles()
 
-    # End render_loop
 
 # # # KEY # # #
 
@@ -921,7 +946,10 @@ class Player:
             str: The URL of the player's skin texture.
         """
         name = player_name()
-        return Player.__get_player_info(name).getSkin().textureUrl() # type: ignore
+        if _check_ver("1.21.9"):
+            return Player.__get_player_info(name).getSkin().body().texturePath().getPath() # type: ignore
+        else:
+            return Player.__get_player_info(name).getSkin().textureUrl() # type: ignore
 
     @staticmethod
     def get_food_level() -> float:
@@ -1059,17 +1087,36 @@ class Server:
         opt = {}
         pi_list = mc.player.connection.getListedOnlinePlayers().toArray()
         for i in range(len(pi_list)):
-            name = pi_list[i].getTabListDisplayName()
-            if name is None or name == "":
-                name = pi_list[i].getProfile().getName()
+            pi_name = pi_list[i].getTabListDisplayName()
+            if pi_name is None or pi_name == "":
+                if _check_ver("1.21.11"):
+                    pi_name = pi_list[i].getProfile().name()
+                else:
+                    pi_name = pi_list[i].getProfile().getName()
             else:
-                name = name.getString()
+                pi_name = pi_name.getString()
+            if _check_ver("1.21.9"):
+                #pi_skin_url = pi_list[i].getSkin().body().texturePath().getPath() # type: ignore
+                try:
+                    prop = b64decode(pi_list[i].getProfile().properties().get("textures").iterator().next().value()).decode("utf-8")
+                    data = loads(prop)
+                    pi_skin_url = data['textures']['SKIN']['url']
+                except:
+                    print("Error")
+                    pi_skin_url = ""
+                #pi_id = pi_list[i].getProfile().id()   # There's a bug in Minescript that 
+                #pi_id = pi_list[i].getProfile().id      # maps field id and not method id()
+                pi_id = ""
+            else:
+                pi_skin_url = pi_list[i].getSkin().textureUrl() # type: ignore
+                pi_id = pi_list[i].getProfile().getId().toString()
+
             opi.update({
-                "Name": name,
-                "UUID": pi_list[i].getProfile().getId().toString(),
+                "Name": pi_name,
+                "UUID": pi_id,
                 "Latency": pi_list[i].getLatency(),
                 "GameMode": pi_list[i].getGameMode().getName(),
-                "SkinURL": pi_list[i].getSkin().textureUrl(),
+                "SkinURL": pi_skin_url,
                 "TablistOrder": pi_list[i].getTabListOrder()
                 })
             team = pi_list[i].getTeam()
@@ -1141,7 +1188,10 @@ class World:
         Returns:
             BlockPos: The coordinates of the spawn position.
         """
-        return World.__get_level_data().getSpawnPos()
+        if _check_ver("1.21.9"):
+            return World.__get_level_data().getRespawnData().pos()
+        else:
+            return World.__get_level_data().getSpawnPos()
     
     @staticmethod
     def get_game_time() -> int:
@@ -1427,8 +1477,8 @@ class Trading:
         menu.tryMoveItems(offer_index)
         Client.send_packet("ServerboundSelectTradePacket", offer_index)
         
-        mc.gameMode.handleInventoryMouseClick(
-            menu.containerId, 2, 1, ClickType.QUICK_MOVE, mc.player)
+        mc.gameMode.handleContainerInput(
+            menu.containerId, 2, 1, ContainerInput.QUICK_MOVE, mc.player)
 
 # # # UTIL # # #
 
@@ -1623,8 +1673,10 @@ def _check_ver(ver: str) -> bool:
         check = check and mc_version[i] >= ver_parts[i]
     return check
 
+UUID = JavaClass("java.util.UUID")
 Minecraft = JavaClass("net.minecraft.client.Minecraft")
-HudRenderCallback = JavaClass("net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback")
+HudElementRegistry = JavaClass("net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry")
+VanillaHudElements = JavaClass("net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements")
 ARGB = JavaClass("net.minecraft.util.ARGB")
 Component = JavaClass("net.minecraft.network.chat.Component")
 ChatFormatting = JavaClass("net.minecraft.ChatFormatting")
@@ -1830,73 +1882,81 @@ def on_hud_render(guiGraphics, tickDeltaManager):
     winx = int(mc.getWindow().getGuiScaledWidth())
     winy = int(mc.getWindow().getGuiScaledHeight())
     screen = str(screen_name())  # None object gets turned into "None" here
-    for t in _texts:
-        # _texts: dict[int, tuple[bool, str, int, int, int, int, int, int, float, bool, bool, bool, bool, bool, float, float]]
-        state, text, x, y, r, g, b, alpha, scale, shadow, italic, underline, strikethrough, obfsucated, anchorX, anchorY, screens = _texts[t]
-        
-        found = (screens == "all") or (screen in screens)
 
-        if state and found:
-            styled_text = Component.literal(text)
-            if italic:
-                styled_text = styled_text.withStyle(ChatFormatting.ITALIC)
-            if underline:
-                styled_text = styled_text.withStyle(ChatFormatting.UNDERLINE)
-            if strikethrough:
-                styled_text = styled_text.withStyle(ChatFormatting.STRIKETHROUGH)
-            if obfsucated:
-                styled_text = styled_text.withStyle(ChatFormatting.OBFUSCATED)
-            color: int = ARGB.color(alpha, r, g, b)
+    try:
+        for t in _texts:
+            # _texts: dict[int, tuple[bool, str, int, int, int, int, int, int, float, bool, bool, bool, bool, bool, float, float]]
+            state, text, x, y, r, g, b, alpha, scale, shadow, italic, underline, strikethrough, obfsucated, anchorX, anchorY, screens = _texts[t]
             
-            scale = scale.floatValue()
-            pose_stack = guiGraphics.pose()
-            if _check_ver("1.21.6"):
-                pose_stack.pushMatrix()
-                pose_stack.scale(scale, scale)
-            else:
-                pose_stack.pushPose()
-                pose_stack.scale(scale, scale, 0)
-            scaled_X: int = int((x / scale) + (anchorX * winx / scale))
-            scaled_Y: int = int((y / scale) + (anchorY * winy / scale))
+            found = (screens == "all") or (screen in screens)
+
+            if state and found:
+                styled_text = Component.literal(text)
+                if italic:
+                    styled_text = styled_text.withStyle(ChatFormatting.ITALIC)
+                if underline:
+                    styled_text = styled_text.withStyle(ChatFormatting.UNDERLINE)
+                if strikethrough:
+                    styled_text = styled_text.withStyle(ChatFormatting.STRIKETHROUGH)
+                if obfsucated:
+                    styled_text = styled_text.withStyle(ChatFormatting.OBFUSCATED)
+                color: int = ARGB.color(alpha, r, g, b)
+                
+                scale = scale.floatValue()
+                pose_stack = guiGraphics.pose()
+                if _check_ver("1.21.6"):
+                    pose_stack.pushMatrix()
+                    pose_stack.scale(scale, scale)
+                else:
+                    pose_stack.pushPose()
+                    pose_stack.scale(scale, scale, 0)
+                scaled_X: int = int((x / scale) + (anchorX * winx / scale))
+                scaled_Y: int = int((y / scale) + (anchorY * winy / scale))
+                
+                guiGraphics.drawString(mc.font, styled_text, scaled_X, scaled_Y, color, shadow)
+                
+                if _check_ver("1.21.6"):
+                    pose_stack.popMatrix()
+                else:
+                    pose_stack.popPose()
+    except:
+        pass
+
+    try:
+        for i in _items:
+            state, item_id, x, y, count, scale, anchorX, anchorY, screens = _items[i]
             
-            guiGraphics.drawString(mc.font, styled_text, scaled_X, scaled_Y, color, shadow)
+            found = (screens == "all") or (screen in screens)
             
-            if _check_ver("1.21.6"):
-                pose_stack.popMatrix()
-            else:
-                pose_stack.popPose()
-    
-    for i in _items:
-        state, item_id, x, y, count, scale, anchorX, anchorY, screens = _items[i]
-        
-        found = (screens == "all") or (screen in screens)
-        
-        if state and found:
-            scale = scale.floatValue()
-            pose_stack = guiGraphics.pose()
-            if _check_ver("1.21.6"):
-                pose_stack.pushMatrix()
-                pose_stack.scale(scale, scale)
-            else:
-                pose_stack.pushPose()
-                pose_stack.scale(scale, scale, 0)
-            scaled_X: int = int((x / scale) + (anchorX * winx / scale))
-            scaled_Y: int = int((y / scale) + (anchorY * winy / scale))
-            
-            item = _get_item_from_itemid(item_id)
-            item_stack = ItemStack(item)
-            
-            guiGraphics.renderItem(item_stack, scaled_X, scaled_Y)
-            if count != "":
-                render_item_count(guiGraphics, mc.font, item_stack, scaled_X, scaled_Y, count)
-            
-            if _check_ver("1.21.6"):
-                pose_stack.popMatrix()
-            else:
-                pose_stack.popPose()
+            if state and found:
+                scale = scale.floatValue()
+                pose_stack = guiGraphics.pose()
+                if _check_ver("1.21.6"):
+                    pose_stack.pushMatrix()
+                    pose_stack.scale(scale, scale)
+                else:
+                    pose_stack.pushPose()
+                    pose_stack.scale(scale, scale, 0)
+                scaled_X: int = int((x / scale) + (anchorX * winx / scale))
+                scaled_Y: int = int((y / scale) + (anchorY * winy / scale))
+                
+                item = _get_item_from_itemid(item_id)
+                item_stack = ItemStack(item)
+                
+                guiGraphics.renderItem(item_stack, scaled_X, scaled_Y)
+                if count != "":
+                    render_item_count(guiGraphics, mc.font, item_stack, scaled_X, scaled_Y, count)
+                
+                if _check_ver("1.21.6"):
+                    pose_stack.popMatrix()
+                else:
+                    pose_stack.popPose()
+    except:
+        pass
 
 callback = ManagedCallback(on_hud_render)
-HudRenderCallback.EVENT.register(HudRenderCallback(callback))
+id = ResourceLocation.fromNamespaceAndPath("minescript", UUID.randomUUID().toString())
+HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT, id, callback)
 
     """)
 

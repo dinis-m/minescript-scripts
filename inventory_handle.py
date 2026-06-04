@@ -1,10 +1,14 @@
-from minescript import container_get_items, echo, player_inventory, screen_name, player_press_use
+from minescript import container_get_items, echo, player_inventory, screen_name
 from minescript_plus import Inventory, Screen
 from time import sleep
+from java import JavaClass
 
 VERSION = "1.1.0"
 
-#Currently only works if first called container in script is opened first
+Minecraft = JavaClass("net.minecraft.client.Minecraft")
+ContainerInput = JavaClass("net.minecraft.world.inventory.ContainerInput")
+mc = Minecraft.getInstance() # type:ignore
+
 def inventory_count(item_name: str) -> int:
     """
     Return the total count of item_name in the player's inventory.
