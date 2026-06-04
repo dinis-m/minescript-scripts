@@ -1,20 +1,12 @@
-from minescript import echo, player_press_use
-#from minescript_plus import Client, Inventory, Screen
-#from inventory_handle import inventory_count
-from autofill_crafting_table import autofill_recipe
+import minescript as m
+from minescript_plus import Client, Inventory, Screen
+from inventory_handle import inventory_count
 from time import sleep
 from java import JavaClass
 
 Minecraft = JavaClass("net.minecraft.client.Minecraft")
 RecipeDisplayId = JavaClass("net.minecraft.world.item.crafting.display.RecipeDisplayId")
 mc = Minecraft.getInstance() # type: ignore
-
-#player_press_use(True)
-#Screen.wait_screen()
-sleep(1)
-#Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(1039), True) # type: ignore
-
-#autofill_recipe("minecraft:diamond")
 
 def debug_all_game_mode_methods():
     cls = mc.gameMode.getClass()
@@ -40,4 +32,4 @@ def debug_all_game_mode_methods():
 
         cls = cls.getSuperclass()
 
-debug_all_game_mode_methods()
+m.echo(m.world_info().day_ticks)
