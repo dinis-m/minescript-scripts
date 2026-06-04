@@ -27,6 +27,9 @@ villager_type = "Farmer"
 teleport_to = "/home farmers"
 pumpkin_chest = [-2182, 49, 1065]
 melon_chest = [-2182, 49, 1066]
+craft_spot = [-2174, 50, 1064, True]
+bed_spot = [-2176, 49, 1067, True]
+bed = [-2176, 50, 1069]
 warned = False
 
 # Set True to debug
@@ -97,7 +100,7 @@ def trade():
                             pre_trade = player_get_targeted_entity().position # type: ignore
                             player_press_forward(False)
                             if first_trade == [int(float(str(x))) for x in pre_trade]:
-                                p.pathfind_to(-2174, 50, 1064, True)
+                                p.pathfind_to(*craft_spot)
                                 # wait until player is in position
                                 while True: # separate function?
                                     sleep(0.05)
@@ -138,11 +141,21 @@ def trade():
 
 while True:
     sleep(0.1)
-    if 2000 <= world_info().day_ticks <= 2100:
+    if 2000 <= world_info().day_ticks <= 8000:
+        warned = False
         for i in range(2):
             check_inv()
             trade()
+            sleep(15)
         break
+    elif 8001 <= world_info().day_ticks <= 11999:
+        warned = False
+        check_inv()
+        trade()
+        break
+    elif 12000 <= world_info().day_ticks <= 12500: # go to bed and sleep
+        p.pathfind_to(*bed_spot)
+        look_at_block(bed[0], bed[1], bed[2])
     else:
         if not warned:
             echo("§aWaiting for daytime")
