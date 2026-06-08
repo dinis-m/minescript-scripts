@@ -48,12 +48,11 @@ def check_inv():
         complete = True
     else:
         execute(teleport_spot)
-        sleep(3) # wait to finish teleporting
-        p.pathfind_to(-2181, 50, 1064, True)
-        while True:
+        while not [int(float(str(x))) for x in player_position()] == [-2176, 49, 1059]:
             sleep(0.05)
-            if [int(x) for x in player_position()] == [-2181, 50, 1064] or [int(x) for x in player_position()] == [-2180, 50, 1064]:
-                break
+        p.pathfind_to(-2181, 50, 1064, True)
+        while not [int(x) for x in player_position()] == [-2181, 50, 1064] or [int(x) for x in player_position()] == [-2180, 50, 1064]:
+            sleep(0.05)
     echo(f"Require {target} total \n{cost_name} \nRequire {(target + 63 ) // 64} stacks(rounded) each")
     # get items from chests until target is reached
     # BUG: sometimes will infinitely loop melons chest, maybe add inventory checking helper function to fix? will fix in future update
@@ -82,7 +81,8 @@ def teleport_to_base_point(teleport_to):
         sleep(0.5)
         if teleport_to != "":
             execute(teleport_to)
-        sleep(3) # wait to finish teleporting
+        while not [int(float(str(x))) for x in player_position()] == [-2176, 49, 1059]:
+            sleep(0.05)
         player_press_forward(True)
 
 def trade():
@@ -108,10 +108,8 @@ def trade():
                             if first_trade == [int(float(str(x))) for x in pre_trade]:
                                 p.pathfind_to(*craft_spot)
                                 # wait until player is in position
-                                while True: # separate function?
+                                while not [int(float(str(x))) for x in player_position()] == [-2173, 50, 1064]:
                                     sleep(0.05)
-                                    if [int(float(str(x))) for x in player_position()] == [-2173, 50, 1064]:
-                                        break
                                 look_at_block(-2173, 50, 1064)
                                 decho("attempting to craft")
                                 craft_items("minecraft:emerald_block")
@@ -148,6 +146,9 @@ def trade():
 while True:
     sleep(0.1)
 
+    if screen_name() == "Game Menu":
+        execute(r"\killjob -1")
+
     ticks = world_info().day_ticks
 
     # Detect new Minecraft day / after sleeping.
@@ -170,7 +171,7 @@ while True:
                 break
             trades_today += 1
             echo("Giving enough time for all\nvillagers to restock.")
-            sleep(6)
+            sleep(7.5)
 
     # Later daytime: if we somehow missed the first window, trade once.
     elif 6000 <= ticks <= 11999:
@@ -181,10 +182,7 @@ while True:
             check_inv()
             trade()
             trades_today += 1
-        else:
-            if not warned:
-                echo("§aTrades depleted for the day,\nwaiting for new day.")
-                warned = True
+            echo("§cTrades depleted for the day,\nwaiting for new day.")
 
     # Nighttime: if no trade happened at all, trade once, then sleep.
     elif 12501 <= ticks <= 20000:
@@ -208,5 +206,3 @@ while True:
         if not warned:
             echo("§aWaiting for daytime")
             warned = True
-
-execute(r"\killjob -1")
