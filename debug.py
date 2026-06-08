@@ -32,4 +32,6 @@ def debug_all_game_mode_methods():
 
         cls = cls.getSuperclass()
 
-m.echo(m.world_info().day_ticks)
+# m.echo(m.world_info().day_ticks)
+sleep(1)
+m.echo(m.screen_name())
