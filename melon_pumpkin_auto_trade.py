@@ -12,7 +12,7 @@ from craft_items import craft_items
 import pathfinding as p
 from time import sleep
 
-VERSION = "1.4.1"
+VERSION = "1.4.2"
 MAX_TRADES = 12
 VILLAGER_COUNT = 63
 echo(f"Melon and Pumpkin Auto Trade Script v{VERSION}")
@@ -28,9 +28,11 @@ teleport_to = "/home farmers"
 pumpkin_chest = [-2182, 49, 1065]
 melon_chest = [-2182, 49, 1066]
 craft_spot = [-2174, 50, 1064, True]
-bed_spot = [-2176, 49, 1067, True]
+bed_spot = [-2175, 50, 1067, True]
 bed = [-2176, 50, 1069]
 warned = False
+trades = 0
+sleeping = False
 
 # Set True to debug
 debug = False
@@ -141,21 +143,26 @@ def trade():
 
 while True:
     sleep(0.1)
-    if 2000 <= world_info().day_ticks <= 8000:
+    if 2100 <= world_info().day_ticks <= 5999:
         warned = False
         for i in range(2):
             check_inv()
             trade()
-            sleep(15)
+            trades += 1
+            sleep(7)
+        
         break
-    elif 8001 <= world_info().day_ticks <= 11999:
+    elif 6000 <= world_info().day_ticks <= 11999 and trades < 1:
         warned = False
         check_inv()
         trade()
+        trades += 1
         break
-    elif 12000 <= world_info().day_ticks <= 12500: # go to bed and sleep
+    elif 12000 <= world_info().day_ticks <= 20000 and not sleeping: # go to bed and sleep
         p.pathfind_to(*bed_spot)
         look_at_block(bed[0], bed[1], bed[2])
+        player_press_use(True)
+        sleeping = True
     else:
         if not warned:
             echo("§aWaiting for daytime")
