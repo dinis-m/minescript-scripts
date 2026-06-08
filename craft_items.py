@@ -1,28 +1,39 @@
-import minescript as m
-from minescript_plus import Server
+from minescript import echo, player_press_use
+from minescript_plus import Client, Inventory, Screen
+from inventory_handle import inventory_count
+from recipe_helper import get_recipes_id
 from time import sleep
 from java import JavaClass
+from math import ceil
 
 Minecraft = JavaClass("net.minecraft.client.Minecraft")
-CraftingInput = JavaClass("net.minecraft.world.item.crafting.CraftingInput")
-CraftingMenu = JavaClass("net.minecraft.world.inventory.CraftingMenu")
-RecipeManager = JavaClass("net.minecraft.world.item.crafting.RecipeManager")
+RecipeDisplayId = JavaClass("net.minecraft.world.item.crafting.display.RecipeDisplayId")
 mc = Minecraft.getInstance() # type: ignore
 
-def craft_item(item_name: str):
-    """
-        Craft the specified item if possible.
+debug = False
 
-        Precondition: The item name must be in the crafting recipe book.
-            Player must be in the crafting screen.
-    """
-    m.echo(f"Attempting to craft {item_name}...")
+if debug:
+    echo("§aDEBUGGING ENABLED FOR: craft_items.py")
 
+def decho(*args):
+    if debug:
+        echo(*args)
 
-sleep(1)
+def craft_items(item_name: str, craft_all: bool = True):
+    craft_for = ceil((inventory_count("minecraft:emerald") // 9) / 64)
+    decho("crafting emerald blocks...")
+    player_press_use(True)
+    Screen.wait_screen("", 1500)
+    decho("crafting screen opened")
+    decho(f"craft_for: {craft_for}")
+    for _ in range(craft_for):
+        sleep(0.1)
+        decho("sending recipe packet...")
+        Client.send_packet("ServerboundPlaceRecipePacket", mc.player.containerMenu.containerId, RecipeDisplayId(get_recipes_id(item_name)), craft_all) # type: ignore
+        decho("recipe packet sent")
+        sleep(0.05)
+        Inventory.shift_click_slot(0)
+        decho("Emerald blocks stored")
+    Screen.close_screen()
 
-if str(mc.screen).split("@")[0] == "net.minecraft.class_479": # type: ignore
-    pass
-print("start")
-# temporary test area
-print("end")
+#craft_emerald_blocks()
