@@ -24,7 +24,7 @@ echo(f"Melon and Pumpkin Auto Trade Script v{VERSION}")
 target = VILLAGER_COUNT * MAX_TRADES
 cost_name = ["minecraft:pumpkin", "minecraft:melon"]
 villager_type = "Farmer"
-teleport_to = "/home farmers"
+teleport_spot = "/home farmers"
 pumpkin_chest = [-2182, 49, 1065]
 melon_chest = [-2182, 49, 1066]
 craft_spot = [-2174, 50, 1064, True]
@@ -47,7 +47,7 @@ def check_inv():
     if inventory_count(cost_name[0]) >= target and inventory_count(cost_name[1]) >= target:
         complete = True
     else:
-        execute(teleport_to)
+        execute(teleport_spot)
         sleep(3) # wait to finish teleporting
         p.pathfind_to(-2181, 50, 1064, True)
         while True:
@@ -74,20 +74,23 @@ def check_inv():
         decho(f"melons filled: {inventory_count(cost_name[1])}")
         complete = pumpkins and melons
 
+def teleport_to_base_point(teleport_to):
+        Screen.close_screen()
+        echo("DONT MOVE")
+        sleep(0.5)
+        player_press_forward(False)
+        sleep(0.5)
+        if teleport_to != "":
+            execute(teleport_to)
+        sleep(3) # wait to finish teleporting
+        player_press_forward(True)
+
 def trade():
     pre_trade = [x.position for x in entities(name=villager_type, max_distance=1.4)]
     first_trade: list[int] = []
     trading = True
 
-    Screen.close_screen()
-    echo("DONT MOVE")
-    sleep(0.5)
-    player_press_forward(False)
-    sleep(0.5)
-    if teleport_to != "":
-        execute(teleport_to)
-    sleep(3) # wait to finish teleporting
-    player_press_forward(True)
+    teleport_to_base_point(teleport_spot)
 
     while True:
         flush()
@@ -163,8 +166,11 @@ while True:
         while trades_today < 2 and 2100 <= world_info().day_ticks <= 5999:
             check_inv()
             trade()
+            if trades_today >= 1:
+                break
             trades_today += 1
-            sleep(7)
+            echo("Giving enough time for all\nvillagers to restock.")
+            sleep(6)
 
     # Later daytime: if we somehow missed the first window, trade once.
     elif 6000 <= ticks <= 11999:
@@ -175,9 +181,13 @@ while True:
             check_inv()
             trade()
             trades_today += 1
+        else:
+            if not warned:
+                echo("§aTrades depleted for the day,\nwaiting for new day.")
+                warned = True
 
     # Nighttime: if no trade happened at all, trade once, then sleep.
-    elif 12000 <= ticks <= 20000:
+    elif 12501 <= ticks <= 20000:
         warned = False
 
         if trades_today < 1:
