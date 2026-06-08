@@ -12,7 +12,7 @@ from craft_items import craft_items
 import pathfinding as p
 from time import sleep
 
-VERSION = "1.4.2"
+VERSION = "1.4.3"
 MAX_TRADES = 12
 VILLAGER_COUNT = 63
 echo(f"Melon and Pumpkin Auto Trade Script v{VERSION}")
@@ -30,9 +30,10 @@ melon_chest = [-2182, 49, 1066]
 craft_spot = [-2174, 50, 1064, True]
 bed_spot = [-2175, 50, 1067, True]
 bed = [-2176, 50, 1069]
+trades_today = 0
 warned = False
-trades = 0
 sleeping = False
+last_ticks = world_info().day_ticks
 
 # Set True to debug
 debug = False
@@ -143,26 +144,56 @@ def trade():
 
 while True:
     sleep(0.1)
-    if 2100 <= world_info().day_ticks <= 5999:
+
+    ticks = world_info().day_ticks
+
+    # Detect new Minecraft day / after sleeping.
+    if ticks < last_ticks:
+        trades_today = 0
         warned = False
-        for i in range(2):
+        sleeping = False
+
+    last_ticks = ticks
+
+    # First restock window: do up to 2 trade rounds.
+    if 2100 <= ticks <= 5999:
+        warned = False
+        sleeping = False
+
+        while trades_today < 2 and 2100 <= world_info().day_ticks <= 5999:
             check_inv()
             trade()
-            trades += 1
+            trades_today += 1
             sleep(7)
-        
-        break
-    elif 6000 <= world_info().day_ticks <= 11999 and trades < 1:
+
+    # Later daytime: if we somehow missed the first window, trade once.
+    elif 6000 <= ticks <= 11999:
         warned = False
-        check_inv()
-        trade()
-        trades += 1
-        break
-    elif 12000 <= world_info().day_ticks <= 20000 and not sleeping: # go to bed and sleep
-        p.pathfind_to(*bed_spot)
-        look_at_block(bed[0], bed[1], bed[2])
-        player_press_use(True)
-        sleeping = True
+        sleeping = False
+
+        if trades_today < 1:
+            check_inv()
+            trade()
+            trades_today += 1
+
+    # Nighttime: if no trade happened at all, trade once, then sleep.
+    elif 12000 <= ticks <= 20000:
+        warned = False
+
+        if trades_today < 1:
+            check_inv()
+            trade()
+            trades_today += 1
+
+        if not sleeping:
+            p.pathfind_to(*bed_spot)
+            look_at_block(bed[0], bed[1], bed[2])
+            player_press_use(True)
+            sleep(0.2)
+            player_press_use(False)
+            sleeping = True
+
+    # Early morning / invalid waiting period.
     else:
         if not warned:
             echo("§aWaiting for daytime")
