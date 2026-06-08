@@ -48,7 +48,7 @@ def check_inv():
         complete = True
     else:
         execute(teleport_spot)
-        while not [int(float(str(x))) for x in player_position()] == [-2177, 49, 1059]:
+        while not [int(float(str(x))) for x in player_position()] == [-2176, 49, 1059]:
             sleep(0.05)
         p.pathfind_to(-2181, 50, 1064, True)
         while not [int(x) for x in player_position()] == [-2181, 50, 1064] or [int(x) for x in player_position()] == [-2180, 50, 1064]:
@@ -81,7 +81,7 @@ def teleport_to_base_point(teleport_to):
         sleep(0.5)
         if teleport_to != "":
             execute(teleport_to)
-        while not [int(float(str(x))) for x in player_position()] == [-2177, 49, 1059]:
+        while not [int(float(str(x))) for x in player_position()] == [-2176, 49, 1059]:
             sleep(0.05)
         player_press_forward(True)
 
@@ -182,10 +182,7 @@ while True:
             check_inv()
             trade()
             trades_today += 1
-        else:
-            if not warned:
-                echo("§aTrades depleted for the day,\nwaiting for new day.")
-                warned = True
+            echo("§cTrades depleted for the day,\nwaiting for new day.")
 
     # Nighttime: if no trade happened at all, trade once, then sleep.
     elif 12501 <= ticks <= 20000:
