@@ -186,7 +186,7 @@ while True:
             echo("§cTrades depleted for the day,\nwaiting for new day.")
 
     # Nighttime: if no trade happened at all, trade once, then sleep.
-    elif 12501 <= ticks <= 20000:
+    elif 12550 <= ticks <= 20000:
         warned = False
 
         if trades_today < 1:
