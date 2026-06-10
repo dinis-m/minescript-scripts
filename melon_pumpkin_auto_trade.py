@@ -50,6 +50,7 @@ def check_inv():
         execute(teleport_spot)
         while not [int(float(str(x))) for x in player_position()] == [-2176, 49, 1059]:
             sleep(0.05)
+        sleep(0.5)
         p.pathfind_to(-2181, 50, 1064, True)
         while not [int(x) for x in player_position()] == [-2181, 50, 1064] or [int(x) for x in player_position()] == [-2180, 50, 1064]:
             sleep(0.05)
