@@ -173,6 +173,7 @@ while True:
             trades_today += 1
             echo("Giving enough time for all\nvillagers to restock.")
             sleep(7.5)
+        echo("§cTrades depleted for the day,\nwaiting for new day.")
 
     # Later daytime: if we somehow missed the first window, trade once.
     elif 6000 <= ticks <= 11999:
