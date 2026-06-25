@@ -7,7 +7,7 @@ PathPos = tuple[int, int, int, bool]
 
 @dataclass(frozen=True)
 class TradeConfig:
-    version: str = "1.4.4"
+    version: str = "1.5.0"
 
     max_trades: int = 12
     villager_count: int = 63
