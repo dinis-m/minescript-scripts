@@ -39,10 +39,10 @@ def fill_to_target(item_name: str, target: int) -> bool:
     missing = target - count
     stacks_needed = (missing + 63) // 64
 
-    # only store slots of items within the container 0-26
+    # only store slots of items within the container 0-53
     item_slots = [
         item.slot for item in container_get_items()
-        if item.item == item_name and item.slot < 27
+        if item.item == item_name and item.slot < 54
     ]
 
     for slot in range(0, stacks_needed):
