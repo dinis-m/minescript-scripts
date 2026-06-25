@@ -11,6 +11,7 @@ from inventory_handle import fill_to_target, inventory_count, get_slots
 from craft_items import craft_items
 import pathfinding as p
 from time import sleep
+from threading import Thread
 
 VERSION = "1.4.3"
 MAX_TRADES = 12
@@ -41,6 +42,16 @@ debug = False
 def decho(*args):
     if debug:
         echo(*args)
+
+def exit_script():
+    while True:
+        if screen_name() == "Game Menu":
+            execute(r"\killjob -1")
+            return
+
+        sleep(0.1)
+
+Thread(target=exit_script, daemon=True).start()
 
 def check_inv():
     complete = False
@@ -146,9 +157,6 @@ def trade():
 
 while True:
     sleep(0.1)
-
-    if screen_name() == "Game Menu":
-        execute(r"\killjob -1")
 
     ticks = world_info().day_ticks
 
